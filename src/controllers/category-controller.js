@@ -2,7 +2,8 @@
 
 module.exports.addCategory = (req, res) => {
     try {
-        res.send("Add Category")
+        console.log(req.file);
+        res.status(200).json({ message:"Image uploaded successfully" })
     } catch (error) {
         console.log(error);
     }

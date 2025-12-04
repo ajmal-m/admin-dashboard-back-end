@@ -4,7 +4,10 @@ const {addCategory} = require('../controllers/category-controller');
 
 router.post('/add',addCategory);
 router.get('/all', (req, res) => {
-    res.send("Categories");
+    res.status(200).json({
+        message:"ALL Category reterived...",
+        success:true,
+    });
 });
 
 module.exports = router;
