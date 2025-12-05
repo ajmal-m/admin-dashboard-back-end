@@ -7,6 +7,8 @@ const catgoryRouter = require("./routers/category-router");
 
 const {connectDB} = require("./config/db");
 
+const {deleteAllCategory} = require("./controllers/category-controller")
+
 dotenv.config();
 connectDB();
 
