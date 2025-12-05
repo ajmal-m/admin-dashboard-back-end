@@ -5,7 +5,10 @@ const cors = require("cors");
 
 const catgoryRouter = require("./routers/category-router");
 
+const {connectDB} = require("./config/db");
+
 dotenv.config();
+connectDB();
 
 const PORT = process.env.PORT || 3000;
 

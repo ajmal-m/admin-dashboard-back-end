@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const {addCategory} = require('../controllers/category-controller');
+const {addCategory , getCategories, deleteCategory} = require('../controllers/category-controller');
 
-router.post('/add',addCategory);
-router.get('/all', (req, res) => {
-    res.status(200).json({
-        message:"ALL Category reterived...",
-        success:true,
-    });
-});
+const multer = require("multer");
+const upload = multer({ dest: 'uploads/' })
+
+router.post('/add', upload.single("image") , addCategory);
+router.get("/all", getCategories);
+router.delete("/", deleteCategory);
 
 module.exports = router;
