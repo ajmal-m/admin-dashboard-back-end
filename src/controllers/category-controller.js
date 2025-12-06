@@ -32,7 +32,7 @@ module.exports.addCategory = async (req, res) => {
             addData['image'] = { secure_url : uploadedFile.secure_url, public_id: uploadedFile.public_id };
         }
         await Category.create(addData);
-        res.status(200).json({ message:"Image uploaded successfully"  })
+        res.status(200).json({ message:"Category created successfully"  })
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: "Internal Server Error" });

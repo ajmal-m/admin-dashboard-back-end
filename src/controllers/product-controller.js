@@ -1,0 +1,31 @@
+
+const Product = require("../models/product");
+const cloudinary = require("../config/cloudinary");
+
+
+module.exports.addProducts = async (req, res) => {
+    try {
+        const image = req.file;
+        const { name, category , stock, price  , status} = req.body;
+        const uploadedImage = await cloudinary.uploader.upload(image.path);
+        await Product.create({
+            name,
+            category,
+            stock,
+            price,
+            status,
+            image:{
+                secure_url: uploadedImage.secure_url,
+                public_id: uploadedImage.public_id
+            }
+        });
+        res.status(200).json({
+            message:"Product created successfully."
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+};
