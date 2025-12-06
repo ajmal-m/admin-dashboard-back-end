@@ -22,14 +22,14 @@ module.exports.getProducts = async (req, res) => {
 module.exports.addProducts = async (req, res) => {
     try {
         const image = req.file;
-        const { name, category , stock, price  , status} = req.body;
+        const { name, category , stock, price  , active} = req.body;
         const uploadedImage = await cloudinary.uploader.upload(image.path);
         await Product.create({
             name,
             category,
             stock,
             price,
-            status,
+            active : Number(active) ? true : false ,
             image:{
                 secure_url: uploadedImage.secure_url,
                 public_id: uploadedImage.public_id

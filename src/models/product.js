@@ -22,7 +22,7 @@ const productSchema = new mongoose.Schema({
         type: Object,
         required: true
     },
-    status:{
+    active:{
         type:Boolean,
         required: false,
         default: true
