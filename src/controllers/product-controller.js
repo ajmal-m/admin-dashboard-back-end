@@ -85,3 +85,51 @@ module.exports.addProducts = async (req, res) => {
         });
     }
 };
+
+module.exports.updateProduct = async (req, res) => {
+    try {
+        const {id} = req.query;
+        const { name, category , stock, price  , active , public_id } = req.body;
+        const image = req.file;
+
+        let updateData = {};
+        if(image && public_id){
+            let  updatedImage = await cloudinary.uploader.upload(image.path, {
+                public_id,
+                overwrite: true
+            })
+            updateData["image"] = {
+                secure_url: updatedImage.secure_url,
+                public_id : updatedImage.public_id
+            }
+        }
+        if(name && name.trim()){
+            updateData["name"] = name;
+        }
+        if(category){
+            updateData["category"] = category;
+        }
+        if(stock){
+            updateData["stock"] = stock;
+        }
+         if(price){
+            updateData["price"] = price;
+        }
+        if(active){
+            updateData["active"] = Number(active) ? true : false;
+        }
+
+        await Product.findByIdAndUpdate(
+            id,
+            updateData
+        );
+        res.status(200).json({
+            message:"Product updated successfully."
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
