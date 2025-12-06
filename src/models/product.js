@@ -6,7 +6,7 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     category :{
-        type: new mongoose.Schema.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "Category",
         required: true
     },
