@@ -174,3 +174,24 @@ module.exports.getSimilarProducts = async (req, res) => {
         });
    }
 }
+
+module.exports.getProductsByCategoryId = async (req, res) => {
+    try {
+        const {cId} = req.params;
+        if(!cId){
+            return res.status(404).json({
+                message:"category Id is Missing"
+            });
+        }
+        const products = await Product.find({ category : cId }).select("-category");
+        res.status(200).json({
+            data:products,
+            message:"products retrieved successfully."
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
