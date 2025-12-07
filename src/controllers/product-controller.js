@@ -19,6 +19,25 @@ module.exports.getProducts = async (req, res) => {
     }
 };
 
+module.exports.getProductsById = async (req, res) => {
+    try {
+        const {id} = req.params;
+        if(!id){
+            return res.status(404).json({ message: "Product Id missing"})
+        }
+        const product = await Product.findById(id).populate("category");
+        res.status(200).json({
+            message:"Product retreived successfully.",
+            data: product
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
+
 
 module.exports.deleteAllProducts = async (req, res) => {
     try {
