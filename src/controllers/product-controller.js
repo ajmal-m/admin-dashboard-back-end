@@ -1,6 +1,7 @@
 
 const Product = require("../models/product");
 const cloudinary = require("../config/cloudinary");
+const mongoose = require("mongoose");
 
 
 module.exports.getProducts = async (req, res) => {
@@ -151,4 +152,25 @@ module.exports.updateProduct = async (req, res) => {
             message:"Internal server error"
         });
     }
+}
+
+module.exports.getSimilarProducts = async (req, res) => {
+   try {
+        const {pId, cId} = req.params;
+        if(!pId || !cId){
+            return res.status(404).json({
+                message:"Product Id or Category Id is Missing."
+            })
+        }
+        const products = await Product.find({ _id : { $ne :  new mongoose.Types.ObjectId(pId) } , category: cId }).populate("category").limit(20);
+        res.status(200).json({
+            data:products,
+            message:"products retrieved successfully."
+        })
+   } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+   }
 }
