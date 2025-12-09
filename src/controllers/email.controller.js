@@ -47,7 +47,7 @@ module.exports.sendOTP = async (req, res) => {
 module.exports.verifyOTP = async (req, res) => {
     try {
         const {otp , email} = req.body;
-        if(!emailOTP[email]){
+        if( ! emailOTP[email] || emailOTP[email]?.otp != otp ){
             return res.status(404).json({
                 message:"OTP is not verified."
             })
