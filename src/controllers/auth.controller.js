@@ -30,6 +30,33 @@ module.exports.signUp = async (req, res) => {
     }
 };
 
+module.exports.logIn = async (req, res) => {
+    try {
+        const {email, password} = req.body;
+        const user = await User.findOne({ email });
+        if(!user){
+            return res.status(404).json({
+                message:"Email address is not found"
+            })
+        }
+        const isCorrectPassword = await bcrypt.compare(String(password), user.password);
+        if(!isCorrectPassword){
+            return res.status(203).json({
+                message:"Password is incorrect"
+            });
+        }
+        const token = await jwt.sign({id : user._id, email: user._id }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
+        res.status(200).json({
+            message:"User logged successfully.",
+            token
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
 
 module.exports.getAllUsers = async (req, res) => {
     try {
