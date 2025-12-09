@@ -49,7 +49,7 @@ module.exports.verifyOTP = async (req, res) => {
         const {otp , email} = req.body;
         if( ! emailOTP[email] || emailOTP[email]?.otp != otp ){
             return res.status(404).json({
-                message:"OTP is not verified."
+                message:"OTP invalid."
             })
         }
         if( Date.now() > emailOTP[email]?.expiresAt ){
