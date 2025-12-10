@@ -58,6 +58,27 @@ module.exports.logIn = async (req, res) => {
     }
 }
 
+module.exports.verifyAuth = async (req, res) => {
+    try {
+        const token = req.body;
+        const verified = jwt.verify( String(token), process.env.JWT_SECRET_KEY);
+        if(!verified){
+            res.status(403).json({
+                message:"User is not suthenticated."
+            })
+        }
+        res.status(200).json({
+            message:"User authenticated",
+            data: verified
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
+
 module.exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.find();
