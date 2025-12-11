@@ -21,7 +21,8 @@ module.exports.signUp = async (req, res) => {
         res.status(200).json({
             message:"Sign up successfully.",
             token,
-            email
+            email,
+            id: newUser._id
         });
     } catch (error) {
         console.log(error);
@@ -46,11 +47,12 @@ module.exports.logIn = async (req, res) => {
                 message:"Password is incorrect"
             });
         }
-        const token = await jwt.sign({id : user._id, email: user.email }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
+        const token =  jwt.sign({id : user._id, email: user.email }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
         res.status(200).json({
             message:"User logged successfully.",
             token,
-            email
+            email,
+            id:user._id
         })
     } catch (error) {
         console.log(error);
