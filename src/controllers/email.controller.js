@@ -1,6 +1,7 @@
 
 const nodemailer = require("../config/node-mailer");
 const crypto = require("crypto");
+const User = require("../models/user");
 
 
 const emailOTP = {
@@ -13,6 +14,13 @@ module.exports.sendOTP = async (req, res) => {
         if(!email){
             return res.status(404).json({
                 message:"email is REquired"
+            })
+        }
+        const user = (await User.find({ email }));
+        console.log("user - ", user)
+        if(user?.length > 0){
+            return res.status(403).json({
+                message:"Email Already Used"
             })
         }
         const otp = crypto.randomInt(100000, 999999).toString();

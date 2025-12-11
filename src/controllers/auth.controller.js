@@ -20,7 +20,8 @@ module.exports.signUp = async (req, res) => {
         const token =  jwt.sign({ id : newUser._id, email: newUser.email }, process.env.JWT_SECRET_KEY , { expiresIn :"24d"});
         res.status(200).json({
             message:"Sign up successfully.",
-            token
+            token,
+            email
         });
     } catch (error) {
         console.log(error);
@@ -35,20 +36,21 @@ module.exports.logIn = async (req, res) => {
         const {email, password} = req.body;
         const user = await User.findOne({ email });
         if(!user){
-            return res.status(404).json({
+            return res.status(403).json({
                 message:"Email address is not found"
             })
         }
         const isCorrectPassword = await bcrypt.compare(String(password), user.password);
         if(!isCorrectPassword){
-            return res.status(203).json({
+            return res.status(403).json({
                 message:"Password is incorrect"
             });
         }
-        const token = await jwt.sign({id : user._id, email: user._id }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
+        const token = await jwt.sign({id : user._id, email: user.email }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
         res.status(200).json({
             message:"User logged successfully.",
-            token
+            token,
+            email
         })
     } catch (error) {
         console.log(error);
@@ -60,12 +62,24 @@ module.exports.logIn = async (req, res) => {
 
 module.exports.verifyAuth = async (req, res) => {
     try {
-        const token = req.body;
-        const verified = jwt.verify( String(token), process.env.JWT_SECRET_KEY);
+        const authorized = req?.headers?.authorization;
+        if(!authorized){
+            return res.status(403).json({
+                message:"User is not authorized."
+            });
+        }
+        const token =authorized?.split(" ")?.[1];
+        console.log("Token is ", token)
+        if(!token){
+            return res.status(403).json({
+                message:"User is not authorized."
+            });
+        }
+        const verified =  jwt.verify( token, process.env.JWT_SECRET_KEY);
         if(!verified){
-            res.status(403).json({
-                message:"User is not suthenticated."
-            })
+            return res.status(403).json({
+                message:"User is not authenticated."
+            });
         }
         res.status(200).json({
             message:"User authenticated",
@@ -86,6 +100,21 @@ module.exports.getAllUsers = async (req, res) => {
             message:"user retrieved successfully.",
             data: users
         });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
+
+module.exports.deleteAllUsers = async (req, res) => {
+    try {
+        const deletedUsers = await User.deleteMany();
+        res.status(200).json({
+            message:"Users deleted successfully.",
+            data: deletedUsers
+        })
     } catch (error) {
         console.log(error);
         res.status(500).json({
