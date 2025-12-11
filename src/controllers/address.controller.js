@@ -36,7 +36,7 @@ module.exports.getDeliveryAddress = async (req, res) => {
 
 module.exports.deleteDeliveryAddress = async (req, res) => {
     try {
-        const { id} = req.query;
+        const { id} = req.params;
         await Address.findByIdAndDelete(id);
         res.status(200).json({
             message:"Delivery address deleted successfully."
@@ -51,7 +51,7 @@ module.exports.deleteDeliveryAddress = async (req, res) => {
 
 module.exports.updateDeliveryAddress = async (req, res) => {
     try {
-        const {id} = req.query;
+        const {id} = req.params;
         const data = req.body;
         await Address.findByIdAndUpdate(id, data);
         res.status(200).json({
