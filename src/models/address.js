@@ -10,7 +10,7 @@ const AddressSchema = new mongoose.Schema({
         type:String,
         required:true
     }, 
-    modile:{
+    mobile:{
         type:String,
         required:true
     }, 

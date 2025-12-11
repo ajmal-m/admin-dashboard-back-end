@@ -18,7 +18,7 @@ module.exports.createDeliveryAddress = async (req, res)=> {
 
 module.exports.getDeliveryAddress = async (req, res) => {
     try {
-        const {id} = req.query;
+        const {id} = req.params;
         const deliveryAddress = await Address.find({
             userId: id
         });
@@ -26,6 +26,37 @@ module.exports.getDeliveryAddress = async (req, res) => {
             message:"Delivery address retreived successfully.",
             data: deliveryAddress
         })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
+
+module.exports.deleteDeliveryAddress = async (req, res) => {
+    try {
+        const { id} = req.query;
+        await Address.findByIdAndDelete(id);
+        res.status(200).json({
+            message:"Delivery address deleted successfully."
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
+}
+
+module.exports.updateDeliveryAddress = async (req, res) => {
+    try {
+        const {id} = req.query;
+        const data = req.body;
+        await Address.findByIdAndUpdate(id, data);
+        res.status(200).json({
+            message:"Delivery address deleted successfully."
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
