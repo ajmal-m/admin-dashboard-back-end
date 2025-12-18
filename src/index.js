@@ -8,6 +8,7 @@ const productRouter = require("./routers/product-router");
 const emailRouter  = require("./routers/email-router");
 const authRouter = require('./routers/auth.router');
 const addressRouter = require("./routers/address.router");
+const orderRouter = require("./routers/order.router");
 
 const {connectDB} = require("./config/db");
 
@@ -30,6 +31,8 @@ app.use("/api/v1/product", productRouter);
 app.use("/api/v1/email", emailRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/address", addressRouter);
+app.use("/api/v1/order", orderRouter);
+
 
 app.listen(PORT, () => {
     console.log(`Server Running on ${PORT}`)
