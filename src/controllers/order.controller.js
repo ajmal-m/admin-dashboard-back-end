@@ -37,8 +37,16 @@ module.exports.getOrderByUser = async (req, res) => {
 module.exports.getOrderByOrderId = async (req, res)=> {
      try {
         const order = await Order.findById(req.params.id).populate("items.productId");
+        const orderObj = order.toObject();
+
+        orderObj.items = orderObj.items.map(item => {
+            item.product = item.productId;
+            delete item.productId;
+            return item;
+        });
+
         res.status(200).json({
-            data:order,
+            data:orderObj,
             message:"Order fetched sucessfully"
         })
     } catch (error) {
