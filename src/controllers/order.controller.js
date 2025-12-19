@@ -18,7 +18,7 @@ module.exports.getOrdersByUserId = async (req, res) => {
 };
 
 
-module.exports.getOrderByUser = async (req, res) => {
+module.exports.getAllOrders = async (req, res) => {
     try {
         
         const orders = await Order.find();
