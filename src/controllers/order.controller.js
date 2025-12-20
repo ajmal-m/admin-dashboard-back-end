@@ -109,3 +109,25 @@ module.exports.createOrder = async(req, res) => {
         });
     }
 }
+
+
+module.exports.deleteOrder = async (req, res) => {
+    try {
+        const id = req.params?.id;
+        if(!id){
+            return res.status(404).json({
+                message:"Order Id missing"
+            });
+        }
+        const delData = await Order.findByIdAndDelete(id);
+        res.status(200).json({
+            data: delData,
+            message:"Order delete successfully."
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        })
+    }
+}
