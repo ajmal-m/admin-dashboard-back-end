@@ -196,8 +196,9 @@ module.exports.topProductsOfLastWeek = async (req, res) => {
 module.exports.lastWeekEachDaySales = async (req, res) => {
     try {
         const today = new Date();
+        today.setHours(23,59,59 ,999)
         const sevenDayBack = new Date();
-        sevenDayBack.setDate(today.getDate()-7);
+        sevenDayBack.setDate(today.getDate()-6);
         sevenDayBack.setHours(0,0,0,0);
 
         const data = await Order.aggregate([
@@ -244,7 +245,7 @@ module.exports.lastWeekEachDaySales = async (req, res) => {
             resultMap[item.date] = item.sales;
         });
         const finalResultMap = [];
-        for(let i=0; i< 9; i++){
+        for(let i=0; i< 8; i++){
             const d = new Date(sevenDayBack);
             d.setDate( sevenDayBack.getDate() + i);
             const key = d.toISOString().slice(0,10);
@@ -255,7 +256,7 @@ module.exports.lastWeekEachDaySales = async (req, res) => {
         }
         res.status(200).json({
             message:"Data reterived successfully.",
-            data : finalResultMap
+            data : finalResultMap, 
         });
     } catch (error) {
         console.log(error);
