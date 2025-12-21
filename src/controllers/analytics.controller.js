@@ -27,7 +27,7 @@ module.exports.salesAtLastWeek = async (req, res) => {
             {
                 $match:{
                     orderStatus:"DELIVERED",
-                    createdAt: {
+                    updatedAt: {
                         $gte: sevenDaysAgo,
                         $lte : today
                     }
@@ -251,7 +251,7 @@ module.exports.lastWeekEachDaySales = async (req, res) => {
             const key = d.toISOString().slice(0,10);
             finalResultMap.push({
                 date: key,
-                sales: resultMap[key] || 0
+                sale: resultMap[key] || 0
             })
         }
         res.status(200).json({

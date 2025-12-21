@@ -21,7 +21,7 @@ module.exports.getOrdersByUserId = async (req, res) => {
 module.exports.getAllOrders = async (req, res) => {
     try {
         
-        const orders = await Order.find();
+        const orders = await Order.find().sort({ updatedAt:-1 });
         res.status(200).json({
             data:orders,
             message:"Order fetched sucessfully"
