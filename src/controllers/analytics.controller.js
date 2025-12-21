@@ -98,4 +98,96 @@ module.exports.averageOrderValue = async (req, res) => {
             message:"Internal server error"
         });
     }
+};
+
+
+module.exports.orderStatusDatas = async (req, res) => {
+    try {
+        const orderStatusDatas = await Order.aggregate([
+            {
+                $group:{
+                    _id: "$orderStatus",
+                    count : { $sum : 1}
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    label:"$_id",
+                    value:"$count"
+                }
+            }
+        ]);
+        res.status(200).json({
+            data : orderStatusDatas,
+            message:"data reterived successfully."
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(200).json({
+            message:"Internal server error"
+        });
+    }
+};
+
+
+module.exports.topProductsOfLastWeek = async (req, res) => {
+    try {
+        const today = new Date();
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(today.getDate()-7);
+        sevenDaysAgo.setHours(0,0,0,0);
+
+        const data = await Order.aggregate([
+            {
+                $match:{
+                    createdAt: { $gte : sevenDaysAgo , $lte : today }
+                }
+            },
+            {
+                $unwind:"$items"
+            },
+            {
+                $group:{
+                    _id:"$items.productId",
+                    totalQuantity:{$sum : "$items.quantity" }
+                }
+            },
+            {
+                $lookup:{
+                    from:"products",
+                    localField:"_id",
+                    foreignField:"_id",
+                    as:"Product"
+                }
+            },
+            {
+                $unwind:"$Product"
+            },
+            {
+                $sort:{
+                    totalQuantity:-1
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    value:"$totalQuantity",
+                    name:"$Product.name"
+                }
+            },
+            {
+                $limit:10
+            }
+        ]);
+        res.status(200).json({
+            data,
+            message:"data reterived successfully"
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        });
+    }
 }
