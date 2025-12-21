@@ -191,3 +191,76 @@ module.exports.topProductsOfLastWeek = async (req, res) => {
         });
     }
 }
+
+
+module.exports.lastWeekEachDaySales = async (req, res) => {
+    try {
+        const today = new Date();
+        const sevenDayBack = new Date();
+        sevenDayBack.setDate(today.getDate()-7);
+        sevenDayBack.setHours(0,0,0,0);
+
+        const data = await Order.aggregate([
+            {
+                $match:{
+                    orderStatus:"DELIVERED",
+                    updatedAt:{
+                        $gte: sevenDayBack,
+                        $lte : today
+                    }
+                }
+            },
+            {
+                $project:{
+                    shippingAddress:0,
+                    payment:0,
+                }
+            },
+            {
+                $group:{
+                    _id: {
+                        $dateToString: {
+                            format: "%Y-%m-%d",
+                            date: "$updatedAt"
+                        }
+                    },
+                    totalSale:{ $sum : "$grandTotal"}
+                }
+            },
+            {
+                $project:{
+                    _id:0,
+                    date:"$_id",
+                    sales:"$totalSale"
+                }
+            },
+            {
+                $sort:{ date : 1 }
+            }
+            
+        ]);
+        const resultMap = {};
+        data.forEach((item) => {
+            resultMap[item.date] = item.sales;
+        });
+        const finalResultMap = [];
+        for(let i=0; i< 9; i++){
+            const d = new Date(sevenDayBack);
+            d.setDate( sevenDayBack.getDate() + i);
+            const key = d.toISOString().slice(0,10);
+            finalResultMap.push({
+                date: key,
+                sales: resultMap[key] || 0
+            })
+        }
+        res.status(200).json({
+            message:"Data reterived successfully.",
+            data : finalResultMap
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal Server Error"
+        });
+    }
+}
