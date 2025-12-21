@@ -4,7 +4,7 @@ const Order = require("../models/order");
 module.exports.getOrdersByUserId = async (req, res) => {
     try {
         
-        const orders = await Order.find({ userId : req.params.id });
+        const orders = await Order.find({ userId : req.params.id }).sort({ createdAt: -1 });
         res.status(200).json({
             data:orders,
             message:"Order fetched sucessfully"

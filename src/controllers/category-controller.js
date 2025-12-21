@@ -6,7 +6,7 @@ const Category = require("../models/product-category");
 
 module.exports.getCategories = async (req, res) => {
     try {
-        const categories = await Category.find();
+        const categories = await Category.find().sort({ updatedAt : -1  });
         res.status(200).json({
             message:"Category retrieved successfully.",
             data: categories

@@ -265,3 +265,7 @@ module.exports.lastWeekEachDaySales = async (req, res) => {
         });
     }
 }
+
+module.exports.topCategories = async (req,res) => {
+    
+}
