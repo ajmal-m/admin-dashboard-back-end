@@ -208,7 +208,7 @@ module.exports.getProductsByCategoryId = async (req, res) => {
             sort=PRODUCT_SORT_OPTIONS[JSON.parse(JSON.stringify(req.query?.sort))] ?? {};
         }
         const products = await 
-            Product.find(query).select("-category").sort(sort);
+            Product.find(query).select("-category").sort(sort).collation({ locale: "en", strength: 2 });
         res.status(200).json({
             data:products,
             count:products.length,
