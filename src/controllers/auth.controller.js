@@ -47,12 +47,13 @@ module.exports.logIn = async (req, res) => {
                 message:"Password is incorrect"
             });
         }
-        const token =  jwt.sign({id : user._id, email: user.email }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
+        const token =  jwt.sign({id : user._id, email: user.email , role: user.role }, process.env.JWT_SECRET_KEY,{ expiresIn : "24d"});
         res.status(200).json({
             message:"User logged successfully.",
             token,
             email,
-            id:user._id
+            id:user._id,
+            role: user.role
         })
     } catch (error) {
         console.log(error);
