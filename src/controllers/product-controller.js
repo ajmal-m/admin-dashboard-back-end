@@ -6,11 +6,21 @@ const mongoose = require("mongoose");
 
 module.exports.getProducts = async (req, res) => {
     try {
-        const products = await Product.find({ }).populate("category").sort({ updatedAt : -1  });
+        const query = 
+            Product.find({ })
+            .populate("category")
+            .sort({ updatedAt : -1  });
+        
+        if(req.query?.limit){
+            query.limit(req.query?.limit)
+        }
+
+        const products = await query;
 
         res.status(200).json({
             message:"Product retrieved successfully.",
-            data: products
+            data: products,
+            count: products.length
         })
     } catch (error) {
         console.log(error);
