@@ -267,5 +267,94 @@ module.exports.lastWeekEachDaySales = async (req, res) => {
 }
 
 module.exports.topCategories = async (req,res) => {
-    
+    try {
+        const data = await Order.aggregate([
+            {
+                $match:{
+                    orderStatus:"DELIVERED"
+                }
+            },
+            {
+                $unwind:"$items"
+            },
+            {
+                $lookup:{
+                    from:"products",
+                    let:{ pId : "$items.productId" },
+                    pipeline:[
+                        {
+                            $match:{
+                                $expr:{ 
+                                    $eq : [ "$_id" , "$$pId" ]
+                                 }
+                            }
+                        },
+                        {
+                            $project:{
+                                category:1
+                            }
+                        }
+                    ],
+                    as:"product"
+                }
+            },
+            {
+                $unwind:"$product"
+            },
+            {
+                $group:{
+                    _id:"$product.category",
+                    quantity: { $sum : "$items.quantity" }
+                }
+            },
+            {
+                $lookup:{
+                    from:'categories',
+                    let : { cId : "$_id" },
+                    pipeline:[
+                        {
+                            $match:{
+                                $expr:{
+                                    $eq : [ "$_id" , "$$cId" ]
+                                }
+                            }
+                        },
+                        {
+                            $project:{
+                                name:1
+                            }
+                        }
+                    ],
+                    as:"category"
+                }
+            },
+            {
+                $unwind:"$category"
+            },
+            {
+                $sort:{
+                    quantity:-1
+                }
+            },
+            {
+                $limit:10
+            },
+             {
+                $project:{
+                    _id:0,
+                    name:"$category.name",
+                    quantity:"$quantity"
+                }
+            },
+        ]);
+        res.status(200).json({ 
+            message:"data reterived successfully.",
+            data
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message:"Internal server error"
+        })
+    }
 }
