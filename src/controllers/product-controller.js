@@ -2,6 +2,7 @@
 const Product = require("../models/product");
 const cloudinary = require("../config/cloudinary");
 const mongoose = require("mongoose");
+const {PRODUCT_SORT_OPTIONS} = require("../utils/const")
 
 
 module.exports.getProducts = async (req, res) => {
@@ -188,14 +189,29 @@ module.exports.getSimilarProducts = async (req, res) => {
 module.exports.getProductsByCategoryId = async (req, res) => {
     try {
         const {cId} = req.params;
+        let sort = {};
+        let query = {};
         if(!cId){
             return res.status(404).json({
                 message:"category Id is Missing"
             });
         }
-        const products = await Product.find({ category : cId }).select("-category");
+        if(cId){
+            query["category"] = cId;
+        }
+        if(req.query?.q){
+            query["name"] = {
+                $regex: req.query?.q || "", $options: "i" 
+            }
+        }
+        if(req.query?.sort ){
+            sort=PRODUCT_SORT_OPTIONS[JSON.parse(JSON.stringify(req.query?.sort))] ?? {};
+        }
+        const products = await 
+            Product.find(query).select("-category").sort(sort);
         res.status(200).json({
             data:products,
+            count:products.length,
             message:"products retrieved successfully."
         })
     } catch (error) {
