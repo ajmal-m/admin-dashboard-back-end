@@ -7,8 +7,17 @@ const {PRODUCT_SORT_OPTIONS} = require("../utils/const")
 
 module.exports.getProducts = async (req, res) => {
     try {
+        let findQuery = {};
+        const q = req.query?.q ?? null;
+        if(q){
+            findQuery = {
+                $or:[
+                    { name : { $regex : q, $options :"i" } },
+                ]
+            };
+        }
         const query = 
-            Product.find({ })
+            Product.find(findQuery)
             .populate("category")
             .sort({ updatedAt : -1  });
         
