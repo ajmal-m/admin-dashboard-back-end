@@ -2,15 +2,20 @@
 const Product = require("../models/product");
 const cloudinary = require("../config/cloudinary");
 const mongoose = require("mongoose");
-const { CATEGORY_PRODUCT_SORT_OPTIONS, ADMIN_PRODUCTS_SORT_OPTIONS} = require("../utils/const")
+const { CATEGORY_PRODUCT_SORT_OPTIONS, ADMIN_PRODUCTS_SORT_OPTIONS, PRODUCT_ACTIVE_OPTIONS} = require("../utils/const")
 
 
 module.exports.getProducts = async (req, res) => {
     try {
-        let findQuery = {};
+        let findQuery = {  };
         const q = req.query?.q ?? null;
         const catId = req.query?.cat ?? null;
         let sortQuery = { updatedAt : -1  };
+        if(req.query?.active){
+            findQuery = {
+                ...PRODUCT_ACTIVE_OPTIONS[JSON.parse(JSON.stringify(req.query?.active))]
+            }
+        }
         if(q){
             findQuery = {
                 $or:[
@@ -21,9 +26,9 @@ module.exports.getProducts = async (req, res) => {
         if(catId?.length){
             findQuery = {
                 ...findQuery,
-              category:{
-                $in:catId
-              }
+                category:{
+                    $in:catId
+                }
             }
         }
         if(req.query?.sort  ){

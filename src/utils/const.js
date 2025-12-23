@@ -10,4 +10,10 @@ module.exports.ADMIN_PRODUCTS_SORT_OPTIONS = {
     ...this.CATEGORY_PRODUCT_SORT_OPTIONS,
     STOCK_LOW_HIGH:  { stock : 1 },
     STOCK_HIGH_LOW : { stock : -1 }
-}
+};
+
+
+module.exports.PRODUCT_ACTIVE_OPTIONS = {
+    ACTIVE:{ active: true },
+    INACTIVE: { active : false}
+};
