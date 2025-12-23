@@ -31,19 +31,27 @@ module.exports.getProducts = async (req, res) => {
                 }
             }
         }
-        if(req.query?.sort  ){
+        if(req.query?.sort ){
             sortQuery = {
                 ...ADMIN_PRODUCTS_SORT_OPTIONS[JSON.parse(JSON.stringify(req.query.sort))]
             }
         }
-        console.log(sortQuery)
         const query = 
             Product.find(findQuery)
             .populate("category")
             .sort(sortQuery).collation({ locale: "en", strength: 2 });
         
-        if(req.query?.limit){
-            query.limit(req.query?.limit)
+        const countQuery = Product.find(findQuery)
+            .populate("category")
+            .sort(sortQuery).collation({ locale: "en", strength: 2 });;
+        
+        const totalDocs = await countQuery.countDocuments();
+        const limit = req.query?.limit;
+        const page = req.query?.page ?? 1;
+        let pageCount;
+        if(limit){
+            pageCount = Math.ceil(totalDocs/limit);
+            query.skip( (page-1)  * limit ).limit(limit);
         }
 
         const products = await query;
@@ -51,7 +59,9 @@ module.exports.getProducts = async (req, res) => {
         res.status(200).json({
             message:"Product retrieved successfully.",
             data: products,
-            count: products.length
+            count: products.length,
+            pageCount,
+            currentPage:Number(page)
         })
     } catch (error) {
         console.log(error);
