@@ -2,13 +2,15 @@
 const Product = require("../models/product");
 const cloudinary = require("../config/cloudinary");
 const mongoose = require("mongoose");
-const {PRODUCT_SORT_OPTIONS} = require("../utils/const")
+const { CATEGORY_PRODUCT_SORT_OPTIONS, ADMIN_PRODUCTS_SORT_OPTIONS} = require("../utils/const")
 
 
 module.exports.getProducts = async (req, res) => {
     try {
         let findQuery = {};
         const q = req.query?.q ?? null;
+        const catId = req.query?.cat ?? null;
+        let sortQuery = { updatedAt : -1  };
         if(q){
             findQuery = {
                 $or:[
@@ -16,10 +18,24 @@ module.exports.getProducts = async (req, res) => {
                 ]
             };
         }
+        if(catId?.length){
+            findQuery = {
+                ...findQuery,
+              category:{
+                $in:catId
+              }
+            }
+        }
+        if(req.query?.sort  ){
+            sortQuery = {
+                ...ADMIN_PRODUCTS_SORT_OPTIONS[JSON.parse(JSON.stringify(req.query.sort))]
+            }
+        }
+        console.log(sortQuery)
         const query = 
             Product.find(findQuery)
             .populate("category")
-            .sort({ updatedAt : -1  });
+            .sort(sortQuery).collation({ locale: "en", strength: 2 });
         
         if(req.query?.limit){
             query.limit(req.query?.limit)
@@ -214,7 +230,7 @@ module.exports.getProductsByCategoryId = async (req, res) => {
             }
         }
         if(req.query?.sort ){
-            sort=PRODUCT_SORT_OPTIONS[JSON.parse(JSON.stringify(req.query?.sort))] ?? {};
+            sort=CATEGORY_PRODUCT_SORT_OPTIONS[JSON.parse(JSON.stringify(req.query?.sort))] ?? {};
         }
         const products = await 
             Product.find(query).select("-category").sort(sort).collation({ locale: "en", strength: 2 });
