@@ -17,3 +17,8 @@ module.exports.PRODUCT_ACTIVE_OPTIONS = {
     ACTIVE:{ active: true },
     INACTIVE: { active : false}
 };
+
+
+module.exports.ADMIN_ORDER_SORT_OPTIONS = {
+    LAST_UPDATES_FRIST : { updatedAt : -1 }
+};

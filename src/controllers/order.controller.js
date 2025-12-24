@@ -1,4 +1,5 @@
 const Order = require("../models/order");
+const { ADMIN_ORDER_SORT_OPTIONS } = require("../utils/const");
 
 
 module.exports.getOrdersByUserId = async (req, res) => {
@@ -24,7 +25,11 @@ module.exports.getAllOrders = async (req, res) => {
         const paymentStatuses = req.query?.pts;
         const limit = req.query?.limit ?? 10;
         const page = req.query?.page ?? 1;
+        const sort = req.query?.sort ?? '';
+
         let findQuery = {};
+        let sortQuery = {};
+
         if(orderStatuses?.length){
             findQuery = {
                 ...findQuery,
@@ -41,8 +46,14 @@ module.exports.getAllOrders = async (req, res) => {
                 }
             }
         }
-        const queryClone = Order.find(findQuery).sort();
-        const query = Order.find(findQuery).sort().skip((page-1) * limit ).limit(limit);
+        if(sort){
+            sortQuery = {
+                ...sortQuery,
+                ...ADMIN_ORDER_SORT_OPTIONS[JSON.parse(JSON.stringify(sort))]
+            };
+        }
+        const queryClone = Order.find(findQuery).sort(sortQuery);
+        const query = Order.find(findQuery).sort(sortQuery).skip((page-1) * limit ).limit(limit);
 
         const totalCount = await queryClone.countDocuments();
         const totalPages = Math.ceil(totalCount/limit);
