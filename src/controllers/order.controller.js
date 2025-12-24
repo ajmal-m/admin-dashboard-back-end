@@ -22,6 +22,8 @@ module.exports.getAllOrders = async (req, res) => {
     try {
         const orderStatuses = req.query?.ods;
         const paymentStatuses = req.query?.pts;
+        const limit = req.query?.limit ?? 10;
+        const page = req.query?.page ?? 1;
         let findQuery = {};
         if(orderStatuses?.length){
             findQuery = {
@@ -39,14 +41,18 @@ module.exports.getAllOrders = async (req, res) => {
                 }
             }
         }
-        const orders = await 
-            Order
-            .find(findQuery)
-            .sort({ updatedAt:-1 });
+        const queryClone = Order.find(findQuery).sort({ updatedAt : -1});
+        const query = Order.find(findQuery).sort({ updatedAt : -1}).skip((page-1) * limit ).limit(limit);
+
+        const totalCount = await queryClone.countDocuments();
+        const totalPages = Math.ceil(totalCount/limit);
+        const orders = await query;
 
         res.status(200).json({
             data:orders,
             count: orders.length,
+            totalPages: totalPages,
+            currentPage: Number(page),
             message:"Order fetched sucessfully"
         })
     } catch (error) {
