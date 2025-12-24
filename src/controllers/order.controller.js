@@ -20,10 +20,24 @@ module.exports.getOrdersByUserId = async (req, res) => {
 
 module.exports.getAllOrders = async (req, res) => {
     try {
-        
-        const orders = await Order.find().sort({ updatedAt:-1 });
+        const orderStatuses = req.query?.ods;
+        let findQuery = {};
+        if(orderStatuses?.length){
+            findQuery = {
+                ...findQuery,
+                orderStatus:{
+                    $in : orderStatuses
+                }
+            }
+        }
+        const orders = await 
+            Order
+            .find(findQuery)
+            .sort({ updatedAt:-1 });
+
         res.status(200).json({
             data:orders,
+            count: orders.length,
             message:"Order fetched sucessfully"
         })
     } catch (error) {
