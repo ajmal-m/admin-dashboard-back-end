@@ -41,8 +41,8 @@ module.exports.getAllOrders = async (req, res) => {
                 }
             }
         }
-        const queryClone = Order.find(findQuery).sort({ updatedAt : -1});
-        const query = Order.find(findQuery).sort({ updatedAt : -1}).skip((page-1) * limit ).limit(limit);
+        const queryClone = Order.find(findQuery).sort();
+        const query = Order.find(findQuery).sort().skip((page-1) * limit ).limit(limit);
 
         const totalCount = await queryClone.countDocuments();
         const totalPages = Math.ceil(totalCount/limit);
