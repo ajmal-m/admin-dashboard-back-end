@@ -21,12 +21,21 @@ module.exports.getOrdersByUserId = async (req, res) => {
 module.exports.getAllOrders = async (req, res) => {
     try {
         const orderStatuses = req.query?.ods;
+        const paymentStatuses = req.query?.pts;
         let findQuery = {};
         if(orderStatuses?.length){
             findQuery = {
                 ...findQuery,
                 orderStatus:{
                     $in : orderStatuses
+                }
+            }
+        };
+        if(paymentStatuses?.length){
+            findQuery = {
+                ...findQuery,
+                'payment.status':{
+                    $in: paymentStatuses
                 }
             }
         }
